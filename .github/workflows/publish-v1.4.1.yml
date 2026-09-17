@@ -1,0 +1,24 @@
+name: Publish Manifest Szerkeszto v1.4.1
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify and upload EXE
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="5b58be0598083d43547d1897f5f90e7217d0de48bb3472b6702e4c99d16c22fd"
+          actual="$(sha256sum release-assets/ManifestSzerkeszto.exe | awk '{print $1}')"
+          test "$actual" = "$expected"
+          gh release upload v1.4.1 release-assets/ManifestSzerkeszto.exe --repo "$GITHUB_REPOSITORY"
